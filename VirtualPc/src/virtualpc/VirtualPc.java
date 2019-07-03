@@ -89,7 +89,7 @@ public class VirtualPc extends Application {
         Button btnConnect = new Button("Connect");
         Button btnExport = new Button("Export Feedbacks");
         TextField txtcommand = new TextField();
-        txtcommand.setDisable(true);
+        txtcommand.setDisable(false);
         txtcommand.setPrefWidth(425);
         btnConnect.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -103,7 +103,13 @@ public class VirtualPc extends Application {
                         Platform.runLater(() -> {
                             buffer.appendText("Pc " + hostname + "is ready to establish and accept conx at port " + txtPort.getText() + "\n");
                         });
+                        Platform.runLater(() -> {
+                            buffer.appendText("To establish conx \n");
+                        });
 
+                        Platform.runLater(() -> {
+                            buffer.appendText(entertoconnect);
+                        });
                         txtHostname.setDisable(true);
                         txtPort.setDisable(true);
                         // Process.Start("path/to/your/file")
@@ -133,14 +139,6 @@ public class VirtualPc extends Application {
                     Logger.getLogger(VirtualPc.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-        });
-
-        Platform.runLater(() -> {
-            buffer.appendText("To establish conx \n");
-        });
-
-        Platform.runLater(() -> {
-            buffer.appendText(entertoconnect);
         });
 
         position = "connect";
@@ -253,7 +251,7 @@ public class VirtualPc extends Application {
                 case "forward":
                     Platform.runLater(() -> {
                         buffer.appendText(" " + command);
-                        pc.send(msg, address, nexthostname);
+                        pc.send(command, address, nexthostname);
                     });
                     Platform.runLater(() -> {
                         buffer.appendText("msg sent\n");
