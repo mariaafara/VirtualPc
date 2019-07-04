@@ -104,12 +104,12 @@ public class VirtualPc extends Application {
                         if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
                             System.out.println(InetAddress.getLocalHost());
                             pc = new PC(InetAddress.getByName("127.0.0.1"), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
-                          //  lblip.setText(InetAddress.getLocalHost() + "");
+                           lblip.setText(InetAddress.getByName("127.0.0.1") + "");
 
                         } else {
                             pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
                             System.out.println(InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
-                           // lblip.setText(getCurrentEnvironmentNetworkIp());
+                            lblip.setText(getCurrentEnvironmentNetworkIp());
                         }
 
                         hostname = txtHostname.getText();
