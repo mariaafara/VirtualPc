@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -19,6 +21,7 @@ import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -46,7 +49,7 @@ import sharedPackage.PacketFactory;
  * @author maria afara
  */
 public class VirtualPc extends Application {
-
+  static String currentHostIpAddress = null;
     public static TextArea buffer;
 //192.168.182.1
     public PC pc;
@@ -97,7 +100,7 @@ public class VirtualPc extends Application {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
 
-                        pc = new PC(InetAddress.getLocalHost(), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
+                        pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
                         hostname = txtHostname.getText();
                         port = Integer.parseInt(txtPort.getText());
                         Platform.runLater(() -> {
@@ -289,7 +292,43 @@ public class VirtualPc extends Application {
 
         primaryStage.show();
     }
-
+ public String getCurrentEnvironmentNetworkIp() {
+        
+        if (currentHostIpAddress == null) {
+            Enumeration<NetworkInterface> netInterfaces = null;
+            try {
+                netInterfaces = NetworkInterface.getNetworkInterfaces();
+                
+                while (netInterfaces.hasMoreElements()) {
+                    NetworkInterface ni = netInterfaces.nextElement();
+                    //System.out.println(ni.getName());
+                    if (!ni.getName().contains("wlan")) {
+                        continue;
+                    }
+                    Enumeration<InetAddress> address = ni.getInetAddresses();
+                    while (address.hasMoreElements()) {
+                        InetAddress addr = address.nextElement();
+                        //                      log.debug("Inetaddress:" + addr.getHostAddress() + " loop? " + addr.isLoopbackAddress() + " local? "
+                        //                            + addr.isSiteLocalAddress());
+                        if (!addr.isLoopbackAddress() && addr.isSiteLocalAddress()
+                                && !(addr.getHostAddress().indexOf(":") > -1)) {
+                            //System.out.println(addr);
+                            currentHostIpAddress = addr.getHostAddress();
+                            return currentHostIpAddress;
+                        }
+                    }
+                }
+                if (currentHostIpAddress == null) {
+                    currentHostIpAddress = "127.0.0.1";
+                }
+                
+            } catch (SocketException e) {
+//                log.error("Somehow we have a socket error acquiring the host IP... Using loopback instead...");
+                currentHostIpAddress = "127.0.0.1";
+            }
+        }
+        return currentHostIpAddress;
+    }
     /**
      * @param args the command line arguments
      */
