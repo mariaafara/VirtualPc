@@ -103,13 +103,13 @@ public class VirtualPc extends Application {
                     if (btnConnect.getText().equals("Connect")) {
                         if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
                             System.out.println(InetAddress.getLocalHost());
-                            pc = new PC(InetAddress.getLocalHost(), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
-                            lblip.setText(InetAddress.getLocalHost() + "");
+                            pc = new PC(InetAddress.getByName("127.0.0.1"), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
+                          //  lblip.setText(InetAddress.getLocalHost() + "");
 
                         } else {
                             pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
                             System.out.println(InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
-                            lblip.setText(getCurrentEnvironmentNetworkIp());
+                           // lblip.setText(getCurrentEnvironmentNetworkIp());
                         }
 
                         hostname = txtHostname.getText();

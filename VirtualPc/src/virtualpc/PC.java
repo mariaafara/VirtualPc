@@ -19,51 +19,19 @@ import java.util.logging.Logger;
 public class PC {
 
     String hostname;
-int port;
+    int port;
     InetAddress ipAddress;
 
     final Object lockRouter = new Object();
     PortConxs portConxs;
-
-    public void run() {
-
-        Scanner scn = new Scanner(System.in);
-        System.out.println("enter name of pc.............");
-        String name = scn.nextLine();
-        setHostname(name);
-
-        for (int i = 0; i < 1; i++) {
-            System.out.println("enter a port.................");
-            initializePort(Integer.parseInt(scn.nextLine()));
-        }
-        for (int i = 0; i < 1; i++) {
-
-            try {
-                System.out.println("enter to establish connection....(myport:neighname:nexthop).......");
-                String line = scn.nextLine();
-                StringTokenizer st = new StringTokenizer(line, ":");
-                int myport = Integer.parseInt(st.nextToken());
-                String neighname = st.nextToken();
-                int nexthop = Integer.parseInt(st.nextToken());
-
-                initializeConnection(myport, InetAddress.getLocalHost(), neighname, nexthop);
-            } catch (UnknownHostException ex) {
-                Logger.getLogger(PC.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-        }
-
-        while (true) {
-        }
-
-    }
 
     public PC(InetAddress ipAddress, String hostname, int port) {
 
         portConxs = new PortConxs();
         this.hostname = hostname;
         this.ipAddress = ipAddress;
-        this.port=port;
+        System.out.println("in pc" + ipAddress);
+        this.port = port;
         initializePort(port);
     }
 
@@ -84,9 +52,11 @@ int port;
             portConxs.getPortInstance(port).connect(neighboraddress, neighborhostname, neighborport);
         }
     }
-    public void send(String msg, InetAddress destip, String desthostname){
-         new Sender(msg,port,hostname, destip,desthostname,portConxs.getPortInstance(port).getOis(), portConxs.getPortInstance(port).getOos(),portConxs.getPortInstance(port).socket).start();
+
+    public void send(String msg, InetAddress destip, String desthostname) {
+        new Sender(msg, port, hostname, destip, desthostname, portConxs.getPortInstance(port).getOis(), portConxs.getPortInstance(port).getOos(), portConxs.getPortInstance(port).socket).start();
     }
+
     public void initializePort(int port) {
         synchronized (this) {
             if (portConxs.containsPort(port)) {
