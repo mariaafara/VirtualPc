@@ -32,6 +32,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -49,7 +50,8 @@ import sharedPackage.PacketFactory;
  * @author maria afara
  */
 public class VirtualPc extends Application {
-  static String currentHostIpAddress = null;
+
+    static String currentHostIpAddress = null;
     public static TextArea buffer;
 //192.168.182.1
     public PC pc;
@@ -79,7 +81,7 @@ public class VirtualPc extends Application {
         buffer.setEditable(false);
         // textArea.textProperty().bind(buffer);
         buffer.setWrapText(true);
-
+        Label lblip = new Label();
         root.setVgrow(buffer, Priority.ALWAYS);
         TextField txtPort = new TextField();
         txtPort.setPrefWidth(120);
@@ -99,8 +101,17 @@ public class VirtualPc extends Application {
             public void handle(ActionEvent t) {
                 try {
                     if (btnConnect.getText().equals("Connect")) {
+                        if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
+                            System.out.println(InetAddress.getLocalHost());
+                            pc = new PC(InetAddress.getLocalHost(), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
+                            lblip.setText(InetAddress.getLocalHost() + "");
 
-                        pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
+                        } else {
+                            pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
+                            System.out.println(InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
+                            lblip.setText(getCurrentEnvironmentNetworkIp());
+                        }
+
                         hostname = txtHostname.getText();
                         port = Integer.parseInt(txtPort.getText());
                         Platform.runLater(() -> {
@@ -280,7 +291,7 @@ public class VirtualPc extends Application {
         });
 
         hostnameConnectionbox.getChildren()
-                .addAll(txtHostname, txtPort, btnConnect, btnExport);
+                .addAll(txtHostname, txtPort, btnConnect, btnExport, lblip);
         root.getChildren()
                 .addAll(hostnameConnectionbox, buffer, txtcommand);
         //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
@@ -292,13 +303,14 @@ public class VirtualPc extends Application {
 
         primaryStage.show();
     }
- public String getCurrentEnvironmentNetworkIp() {
-        
+
+    public String getCurrentEnvironmentNetworkIp() {
+
         if (currentHostIpAddress == null) {
             Enumeration<NetworkInterface> netInterfaces = null;
             try {
                 netInterfaces = NetworkInterface.getNetworkInterfaces();
-                
+
                 while (netInterfaces.hasMoreElements()) {
                     NetworkInterface ni = netInterfaces.nextElement();
                     //System.out.println(ni.getName());
@@ -321,7 +333,7 @@ public class VirtualPc extends Application {
                 if (currentHostIpAddress == null) {
                     currentHostIpAddress = "127.0.0.1";
                 }
-                
+
             } catch (SocketException e) {
 //                log.error("Somehow we have a socket error acquiring the host IP... Using loopback instead...");
                 currentHostIpAddress = "127.0.0.1";
@@ -329,6 +341,7 @@ public class VirtualPc extends Application {
         }
         return currentHostIpAddress;
     }
+
     /**
      * @param args the command line arguments
      */
