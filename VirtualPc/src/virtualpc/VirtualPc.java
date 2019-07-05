@@ -65,8 +65,8 @@ public class VirtualPc extends Application {
     int port;
     String entermsg = "Enter msg you want to forward \n";
 
-    String entertoconnect = "Enter ip address neighip hostname eighhostname port neighport \n";
-    String enterdestination = "Enter a destination to forward a packet in the form ip hostname \n";
+    String entertoconnect = "->Enter ip address neighip hostname eighhostname port neighport \n";
+    String enterdestination = "->Enter a destination to forward a packet in the form ip hostname \n";
     boolean setdestination = false;
     InetAddress address;
     String nexthostname;
@@ -104,7 +104,7 @@ public class VirtualPc extends Application {
                         if (InetAddress.getByName(getCurrentEnvironmentNetworkIp()) == null) {
                             System.out.println(InetAddress.getLocalHost());
                             pc = new PC(InetAddress.getByName("127.0.0.1"), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
-                           lblip.setText("    "+InetAddress.getByName("127.0.0.1") + "");
+                            lblip.setText("    " + InetAddress.getByName("127.0.0.1") + "");
 
                         } else {
                             pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
@@ -168,6 +168,11 @@ public class VirtualPc extends Application {
                     String[] connect_array = command.split(" ");
                     String first_connect_command = connect_array[0];
                     switch (first_connect_command) {
+                        default:
+                            Platform.runLater(() -> {
+                                buffer.appendText(command + "\n%unknown command or computer name , or unable to find computer address\n");
+                            });
+                            break;
                         case "ip":
                             if (connect_array.length != 7
                                     || !connect_array[1].equals("address")
