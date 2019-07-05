@@ -7,7 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import sharedPackage.Neighbor;
+import static virtualpc.VirtualPc.buffer;
 
 /**
  * This class listens on given port for incoming connection
@@ -21,19 +23,20 @@ public class PortConnectionWait extends Thread {
     Socket socket;
     String msg;
     int myport;
-   String myhostname;
-    
+    String myhostname;
 
-    public PortConnectionWait( int myport,String myhostname, Port p) {
+    public PortConnectionWait(int myport, String myhostname, Port p) {
 
         try {
             //Creating server socket
+            Platform.runLater(() -> {
+                buffer.appendText("port " + myport + " waiting for a conx\n");
+            });
             System.out.println("*port " + myport + " waiting for a conx");
             serversocket = new ServerSocket(myport);
             this.p = p;
             this.myport = myport;
-            this.myhostname=myhostname;
-            
+            this.myhostname = myhostname;
 
         } catch (IOException ex) {
             Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
@@ -47,7 +50,7 @@ public class PortConnectionWait extends Thread {
         ObjectOutputStream objectOutputStream;
         while (true) {
             try {
-
+           
                 System.out.println("*port " + myport + " still waiting for a connection");
 
                 socket = serversocket.accept();
@@ -66,11 +69,11 @@ public class PortConnectionWait extends Thread {
                 if (!p.active) {
 
                     System.out.println("before activateEntry");
-                   p.active=true;
+                    p.active=true;
 
                     System.out.println("after activateEntry and before set socket");
                     System.out.println("\n");
-                   
+
                     System.out.println("\n");
 
                     p.setSocket(socket);
@@ -78,12 +81,17 @@ public class PortConnectionWait extends Thread {
                     System.out.println("after setSocket");
 
                     p.setconnectionEstablished(true);
-
+                    Platform.runLater(() -> {
+                        buffer.appendText("Connection is established at port " + myport + "\n");
+                    });
                     objectOutputStream.writeBoolean(true);
                     objectOutputStream.flush();
 
                     ///sar jehez yst2bel 
-                     System.out.println("ready to receive");
+                    System.out.println("ready to receive");
+                    Platform.runLater(() -> {
+                        buffer.appendText("Start Receiving\n");
+                    });
                     new Reciever(myport, p.getOis(), p.getOos()).start();
 //                    new Sender( myport,myhostname, p.getOis(), p.getOos(),p.socket).start();
 

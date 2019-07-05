@@ -29,11 +29,12 @@ public class Port extends Thread {
     final Object lockSocket = new Object();
     final Object lockOos = new Object();
     final Object lockOis = new Object();
-
+    final Object lockactivated = new Object();
     ObjectInputStream ois;
     ObjectOutputStream oos;
 
     String myhostname;
+
     boolean active = true;
 
     public Port(int myport, String myhostname) {
@@ -44,7 +45,7 @@ public class Port extends Thread {
         this.myport = myport;
         this.socket = null;
 
-        portConnectionWait = new PortConnectionWait(myport,myhostname, this);
+        portConnectionWait = new PortConnectionWait(myport, myhostname, this);
         this.ois = null;
         this.oos = null;
     }
@@ -80,9 +81,8 @@ public class Port extends Thread {
 
         synchronized (lockSocket) {
             this.socket = socket;
+            //   this.activated = true;
             System.out.println("*2*in setScoket method2 for port " + myport + " after ");
-
-            //System.out.println("*2*in setScoket method2 for port " + myport + " after snchronized after streams");
         }
     }
 
@@ -123,9 +123,9 @@ public class Port extends Thread {
 
     }
 
-    public void connect(InetAddress neighborAddress,String neighborhostname, int neighborport) {
+    public void connect(InetAddress neighborAddress, String neighborhostname, int neighborport) {
 
-        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress,neighborhostname, neighborport, this);
+        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress, neighborhostname, neighborport, this);
         pce.start();
     }
 

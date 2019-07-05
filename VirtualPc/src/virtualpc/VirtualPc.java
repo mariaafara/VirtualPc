@@ -192,26 +192,34 @@ public class VirtualPc extends Application {
                                     int nextport = Integer.parseInt(connect_array[6]);
                                     InetAddress address = InetAddress.getByName(connect_array[2]);
                                     String nexthostname = connect_array[4];
-                                    System.out.println("initialize conx at " + port + " with " + address.getHostAddress() + "-" + nexthostname + "to" + nextport);
 
                                     //initializeConx
-                                    pc.initializeConnection(port, address, nexthostname, nextport);
+                                    if (nextport != port && !address.getHostAddress().equals(InetAddress.getByName("127.0.0.1"))) {
+                                        pc.initializeConnection(port, address, nexthostname, nextport);
+                                        Platform.runLater(() -> {
+                                            buffer.appendText("" + command + "\n");
+                                        });
+                                        Platform.runLater(() -> {
+                                            buffer.appendText("trying to initialize conx" + port + " with " + address.getHostAddress() + "-" + nexthostname + "to" + nextport + "\n");
+                                        });
+                                        Platform.runLater(() -> {
+                                            buffer.appendText("port " + port + " is waiting for a connection\n");
+                                        });
+                                        while (!pc.isconnectionEstablished()) {
+                                             System.out.println("waiting\n");
+                                        } //waiting for connection approvalll 
+                                        //hon ha n7tej wait notify
+                                        ////hon abel lezmm nt222kd ino lconnextion is establlished
+
+                                        position = "destination";
+
+                                        Platform.runLater(() -> {
+                                            buffer.appendText(enterdestination);
+                                        });
+
+                                    }
 
                                     /////////////////
-                                    Platform.runLater(() -> {
-                                        buffer.appendText("" + command + "\n");
-                                    });
-
-                                    Platform.runLater(() -> {
-                                        buffer.appendText("connection is established\n");
-                                    });
-
-                                    position = "destination";
-
-                                    Platform.runLater(() -> {
-                                        buffer.appendText(enterdestination);
-                                    });
-
                                 } catch (NumberFormatException efee) {
                                     Platform.runLater(() -> {
                                         buffer.appendText("" + command + "\n");

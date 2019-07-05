@@ -8,6 +8,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import static virtualpc.VirtualPc.buffer;
 
 /**
  *
@@ -47,9 +49,9 @@ public class PortConnectionEstablish extends Thread {
                 System.out.println("*socket : myport " + socket.getLocalPort() + " destport " + socket.getPort());
 
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                objectOutputStream.writeObject(new Neighbor(InetAddress.getLocalHost(), myhostname, myport));
+                objectOutputStream.writeObject(new Neighbor(PC.ipAddress, myhostname, myport));
                 p.active = false;
-                System.out.println("*sending my self as a neighbor to ip=" + InetAddress.getLocalHost() + " port=" + myport);
+                System.out.println("*sending my self as a neighbor to ip=" + PC.ipAddress + " port=" + myport);
 
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 bool = objectInputStream.readBoolean();
@@ -59,18 +61,29 @@ public class PortConnectionEstablish extends Thread {
                 if (bool) {
                     //  rt.activateEntry(neighborport);
                     p.setSocket(socket);
+
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
-                    System.out.println("*connection is established at port " + myport + " with neighb = " + neighname + " , " + neighborport);
+                    Platform.runLater(() -> {
+                        buffer.appendText("Connection is established at port " + myport + " with neighb = " + neighname + " , " + neighborport + "\n");
+                    });
+
+                    System.out.println("connection is established at port " + myport + " with neighb = " + neighname + " , " + neighborport);
 
                     ///sar jehez yst2bel 
+                    Platform.runLater(() -> {
+                        buffer.appendText("Start Receiving\n");
+                    });
+
                     System.out.println("Start Receiving");
                     new Reciever(myport, p.getOis(), p.getOos()).start();
 //                    new Sender(myport,myhostname, p.getOis(), p.getOos(),p.socket).start();
 
                 } else {
-
+                    Platform.runLater(() -> {
+                        buffer.appendText("*waiting a connection from " + neighborport + "\n");
+                    });
                     System.out.println("*waiting a connection from " + neighborport);
                     socket.close();
                 }

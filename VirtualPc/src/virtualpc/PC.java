@@ -20,7 +20,7 @@ public class PC {
 
     String hostname;
     int port;
-    InetAddress ipAddress;
+    static InetAddress ipAddress;
 
     final Object lockRouter = new Object();
     PortConxs portConxs;
@@ -55,6 +55,10 @@ public class PC {
 
     public void send(String msg, InetAddress destip, String desthostname) {
         new Sender(msg, port, hostname, destip, desthostname, portConxs.getPortInstance(port).getOis(), portConxs.getPortInstance(port).getOos(), portConxs.getPortInstance(port).socket).start();
+    }
+
+    public boolean isconnectionEstablished() {
+        return portConxs.getPortInstance(port).isconnectionEstablished();
     }
 
     public void initializePort(int port) {
