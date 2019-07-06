@@ -26,9 +26,10 @@ public class PortConnectionEstablish extends Thread {
     private int myport;
     private String neighborhostname;
     private String myhostname;
+    PC pc;
 
-    public PortConnectionEstablish(int myport, String myhostname, InetAddress neighborip, String neighborhostname, int neighborport, Port p) {
-
+    public PortConnectionEstablish(int myport, String myhostname, InetAddress neighborip, String neighborhostname, int neighborport, Port p,  PC pc) {
+        this.pc=pc;
         this.neighborport = neighborport;
         this.myport = myport;
         this.p = p;
@@ -65,6 +66,10 @@ public class PortConnectionEstablish extends Thread {
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
+                    synchronized(pc){
+                        pc.notifyAll();
+                    }
+                    
                     Platform.runLater(() -> {
                         buffer.appendText("Connection is established at port " + myport + " with neighb = " + neighname + " , " + neighborport + "\n");
                     });

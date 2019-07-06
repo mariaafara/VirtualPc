@@ -24,9 +24,10 @@ public class PortConnectionWait extends Thread {
     String msg;
     int myport;
     String myhostname;
+    PC pc;
 
-    public PortConnectionWait(int myport, String myhostname, Port p) {
-
+    public PortConnectionWait(int myport, String myhostname, Port p,    PC pc) {
+        
         try {
             //Creating server socket
             Platform.runLater(() -> {
@@ -37,7 +38,7 @@ public class PortConnectionWait extends Thread {
             this.p = p;
             this.myport = myport;
             this.myhostname = myhostname;
-
+            this.pc=pc;
         } catch (IOException ex) {
             Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -79,8 +80,11 @@ public class PortConnectionWait extends Thread {
                     p.setSocket(socket);
                     p.setStreams(objectInputStream, objectOutputStream);
                     System.out.println("after setSocket");
-
+                    
                     p.setconnectionEstablished(true);
+                    synchronized(pc){
+                        pc.notifyAll();
+                    }
                     Platform.runLater(() -> {
                         buffer.appendText("Connection is established at port " + myport + "\n");
                     });

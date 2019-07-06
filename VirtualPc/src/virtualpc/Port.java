@@ -36,16 +36,17 @@ public class Port extends Thread {
     String myhostname;
 
     boolean active = true;
+    PC pc;
 
-    public Port(int myport, String myhostname) {
-
+    public Port(int myport, String myhostname,PC pc) {
+        this.pc=pc;
         System.out.println("*Port " + myport + " initialized");
         this.myhostname = myhostname;
         this.connectionEstablished = false;
         this.myport = myport;
         this.socket = null;
 
-        portConnectionWait = new PortConnectionWait(myport, myhostname, this);
+        portConnectionWait = new PortConnectionWait(myport, myhostname, this, pc);
         this.ois = null;
         this.oos = null;
     }
@@ -123,9 +124,9 @@ public class Port extends Thread {
 
     }
 
-    public void connect(InetAddress neighborAddress, String neighborhostname, int neighborport) {
+    public void connect(PC p,InetAddress neighborAddress, String neighborhostname, int neighborport) {
 
-        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress, neighborhostname, neighborport, this);
+        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress, neighborhostname, neighborport, this,p);
         pce.start();
     }
 

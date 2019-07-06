@@ -5,12 +5,15 @@
  */
 package virtualpc;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import sharedPackage.FailedNode;
+import sharedPackage.RoutingTableKey;
 
 /**
  *
@@ -49,7 +52,7 @@ public class PC {
                 System.out.println("*This port does not exists");
                 return;
             }
-            portConxs.getPortInstance(port).connect(neighboraddress, neighborhostname, neighborport);
+            portConxs.getPortInstance(port).connect(this, neighboraddress, neighborhostname, neighborport);
         }
     }
 
@@ -67,7 +70,7 @@ public class PC {
                 System.out.println("*This port exists");
                 return;
             }
-            Port portclass = new Port(port, hostname);
+            Port portclass = new Port(port, hostname, this);
 
             portConxs.addPort(port, portclass);//3m syv 3ndee lport
 
@@ -85,4 +88,9 @@ public class PC {
         this.ipAddress = ipAddress;
     }
 
+    public void disconnect() throws IOException {
+        FailedNode fn = new FailedNode(new RoutingTableKey(ipAddress, hostname), new RoutingTableKey(ipAddress, hostname));
+        portConxs.getPortInstance(port).getOos().writeObject(fn);
+        portConxs.getPortInstance(port).getSocket().close();
+    }
 }
