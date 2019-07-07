@@ -8,11 +8,13 @@ package virtualpc;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.Socket;
+import java.net.InetAddress;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import sharedPackage.Packet;
+import static virtualpc.VirtualPc.buffer;
 
 /**
  *
@@ -57,13 +59,38 @@ public class Reciever extends Thread {
                     int ttl = recievedPacket.header.getTTL();
                     ttl--;
                     if (ttl > 0) {
+                        final String x = messageReceived;
+                        final InetAddress y = recievedPacket.header.getSourceAddress();
+                        final String t = recievedPacket.header.toString();
+                        final String z = recievedPacket.header.getSourceHostname();
+                        Platform.runLater(() -> {
+                            buffer.appendText("*Received Message =" + x + "\n");
+                            buffer.appendText("*From             =" + y + ":" + z + "\n");
+                            buffer.appendText("*Header Message =" + t + "\n");
+
+                        });
                         System.out.println("*Received Message =" + messageReceived);
                         System.out.println("*From             =" + recievedPacket.header.getSourceAddress() + ":" + recievedPacket.header.getSourceHostname());
                         System.out.println("*Header Message =" + recievedPacket.header.toString());
                     } else {
+                        final String t = recievedPacket.header.toString();
+                        Platform.runLater(() -> {
+                            buffer.appendText("Packet TTL exceeded, therefore the message is dropped!" + "\n");
+                            buffer.appendText("*Header Message =" + t + "\n");
+                        });
+
                         System.out.println("Packet TTL exceeded, therefore the message is dropped!");
                     }
                 } else {
+                    final String t = recievedPacket.header.getHeaderCheksum();
+                    final String o = recievedPacket.header.getChecksum(recievedPacket.header.cheksumInput());
+                    Platform.runLater(() -> {
+
+                        buffer.appendText("Cheksum not equal, there's an alteration of the message" + "\n");
+                        buffer.appendText("Initial Cheksum =" + t + "\n");
+                        buffer.appendText("Current Cheksum =" + o + "\n");
+                    });
+
                     System.out.println("Cheksum not equal, there's an alteration of the message");
                     System.out.println("Initial Cheksum =" + recievedPacket.header.getHeaderCheksum());
                     System.out.println("Current Cheksum =" + recievedPacket.header.getChecksum(recievedPacket.header.cheksumInput()));
@@ -72,10 +99,10 @@ public class Reciever extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
-              //  Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
+                //  Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassCastException ex) {
-              //  Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
-            }catch (NoSuchAlgorithmException ex) {
+                //  Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NoSuchAlgorithmException ex) {
                 Logger.getLogger(Reciever.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
