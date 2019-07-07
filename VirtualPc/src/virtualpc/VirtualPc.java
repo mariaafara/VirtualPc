@@ -9,17 +9,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -38,22 +33,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-import sharedPackage.Packet;
-import sharedPackage.PacketFactory;
 
 /**
  *
  * @author maria afara
  */
 public class VirtualPc extends Application {
-    
+
     static String currentHostIpAddress = null;
     public static TextArea buffer;
-//192.168.182.1
+
     public PC pc;
     Stage stage;
     String filename;
@@ -64,22 +56,22 @@ public class VirtualPc extends Application {
     String position;
     int port;
     String entermsg = "Enter msg you want to forward \n";
-    
+
     String entertoconnect = "->Enter ip address neighip hostname eighhostname port neighport \n";
     String enterdestination = "->Enter a destination to forward a packet in the form ip hostname \n";
     boolean setdestination = false;
     InetAddress address;
     String nexthostname;
-    
+
     @Override
     public void start(Stage primaryStage) {
         stage = primaryStage;
-        //  buffer = new ObservaleStringBuffer();
+
         VBox root = new VBox(3);
         HBox hostnameConnectionbox = new HBox();
         buffer = new TextArea();//for the feedbacks
         buffer.setEditable(false);
-        // textArea.textProperty().bind(buffer);
+
         buffer.setWrapText(true);
         Label lblip = new Label();
         root.setVgrow(buffer, Priority.ALWAYS);
@@ -105,13 +97,13 @@ public class VirtualPc extends Application {
                             System.out.println(InetAddress.getLocalHost());
                             pc = new PC(InetAddress.getByName("127.0.0.1"), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
                             lblip.setText("    " + InetAddress.getByName("127.0.0.1") + "");
-                            
+
                         } else {
                             pc = new PC(InetAddress.getByName(getCurrentEnvironmentNetworkIp()), txtHostname.getText(), Integer.parseInt(txtPort.getText()));
                             System.out.println(InetAddress.getByName(getCurrentEnvironmentNetworkIp()));
                             lblip.setText(getCurrentEnvironmentNetworkIp());
                         }
-                        
+
                         hostname = txtHostname.getText();
                         port = Integer.parseInt(txtPort.getText());
                         Platform.runLater(() -> {
@@ -120,7 +112,7 @@ public class VirtualPc extends Application {
                         Platform.runLater(() -> {
                             buffer.appendText("To establish conx \n");
                         });
-                        
+
                         Platform.runLater(() -> {
                             buffer.appendText(entertoconnect);
                         });
@@ -155,14 +147,10 @@ public class VirtualPc extends Application {
                 }
             }
         });
-        
+
         position = "connect";
         txtcommand.setOnAction(e -> {
             command = txtcommand.getText();
-            //  lastCommand = lbl.getText();
-//            if (command.equals("")) {
-//                emptycommad = true;
-//            }
 
             switch (position) {
                 case "connect":
@@ -183,11 +171,11 @@ public class VirtualPc extends Application {
                                 Platform.runLater(() -> {
                                     buffer.appendText("" + command + "\n");
                                 });
-                                
+
                                 Platform.runLater(() -> {
                                     buffer.appendText("%unknown command or computer name , or unable to find computer address\n");
                                 });
-                                
+
                             } else {
                                 try {
                                     int nextport = Integer.parseInt(connect_array[6]);
@@ -206,42 +194,41 @@ public class VirtualPc extends Application {
                                         Platform.runLater(() -> {
                                             buffer.appendText("port " + port + " is waiting for a connection\n");
                                         });
+                                        //waiting for connection approvalll 
+                                        //hon ha n7tej wait notify
                                         while (!pc.isconnectionEstablished()) {
                                             synchronized (pc) {
                                                 pc.wait();
                                             }
                                             System.out.println("waiting\n");
-                                        } //waiting for connection approvalll 
-                                        //hon ha n7tej wait notify
-                                        ////hon abel lezmm nt222kd ino lconnextion is establlished
+                                        }
 
                                         position = "destination";
-                                        
+
                                         Platform.runLater(() -> {
                                             buffer.appendText(enterdestination);
                                         });
-                                        
+
                                     }
 
-                                    /////////////////
                                 } catch (NumberFormatException efee) {
                                     Platform.runLater(() -> {
                                         buffer.appendText("" + command + "\n");
                                     });
-                                    
+
                                     Platform.runLater(() -> {
                                         buffer.appendText("%unknown command or computer name , or unable to find computer address\n");
                                     });
-                                    
+
                                 } catch (UnknownHostException ex) {
                                     Platform.runLater(() -> {
                                         buffer.appendText("" + command + "\n");
                                     });
-                                    
+
                                     Platform.runLater(() -> {
                                         buffer.appendText("%unknown command or computer name , or unable to find computer address\n");
                                     });
-                                    
+
                                 } catch (InterruptedException ex) {
                                     Logger.getLogger(VirtualPc.class.getName()).log(Level.SEVERE, null, ex);
                                 }
@@ -254,30 +241,30 @@ public class VirtualPc extends Application {
                         try {
                             address = InetAddress.getByName(dest_array[0]);
                             nexthostname = dest_array[1];
-                            
+
                             Platform.runLater(() -> {
                                 buffer.appendText("" + command + "\n");
                             });
-                            
+
                             Platform.runLater(() -> {
-                                buffer.appendText("destination is entered\n");
+                                buffer.appendText("Destination is entered\n");
                             });
-                            
+
                             position = "forward";
-                            
+
                             Platform.runLater(() -> {
                                 buffer.appendText(entermsg);
                             });
-                            
+
                         } catch (UnknownHostException ex) {
                             Platform.runLater(() -> {
                                 buffer.appendText("" + command + "\n");
                             });
-                            
+
                             Platform.runLater(() -> {
                                 buffer.appendText("%unknown command or computer name , or unable to find computer address\n");
                             });
-                            
+
                         }
                     }
                     break;
@@ -294,42 +281,40 @@ public class VirtualPc extends Application {
                         buffer.appendText(enterdestination);
                     });
                     break;
-                
+
                 default:
                     Platform.runLater(() -> {
                         buffer.appendText(" " + command + "\n");
                     });
-                    
+
                     Platform.runLater(() -> {
                         buffer.appendText("%unknown command or computer name , or unable to find computer address\n");
                     });
-                    
+
                     break;
             }
-            
+
         });
-        
-        hostnameConnectionbox.getChildren()
-                .addAll(txtHostname, txtPort, btnConnect, btnExport, lblip);
-        root.getChildren()
-                .addAll(hostnameConnectionbox, buffer, txtcommand);
-        //buffer.appendText("kakjhas\nsdfdghj\nadsafdsgdhj\nadsafdsgf\n");
+
+        hostnameConnectionbox.getChildren().addAll(txtHostname, txtPort, btnConnect, btnExport, lblip);
+
+        root.getChildren().addAll(hostnameConnectionbox, buffer, txtcommand);
+
         primaryStage.setScene(
                 new Scene(root, 650, 400));
-        
-        primaryStage.setTitle(
-                "Pc");
-        
+
+        primaryStage.setTitle("Pc");
+
         primaryStage.show();
     }
-    
+
     public String getCurrentEnvironmentNetworkIp() {
-        
+
         if (currentHostIpAddress == null) {
             Enumeration<NetworkInterface> netInterfaces = null;
             try {
                 netInterfaces = NetworkInterface.getNetworkInterfaces();
-                
+
                 while (netInterfaces.hasMoreElements()) {
                     NetworkInterface ni = netInterfaces.nextElement();
                     //System.out.println(ni.getName());
@@ -352,7 +337,7 @@ public class VirtualPc extends Application {
                 if (currentHostIpAddress == null) {
                     currentHostIpAddress = "127.0.0.1";
                 }
-                
+
             } catch (SocketException e) {
 //                log.error("Somehow we have a socket error acquiring the host IP... Using loopback instead...");
                 currentHostIpAddress = "127.0.0.1";
@@ -375,31 +360,31 @@ public class VirtualPc extends Application {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Specify a file to save the Feedback!");
         File selectedDirectory = directoryChooser.showDialog(stage);
-        
+
         if (selectedDirectory == null) {
             //saveResults.setText("No Directory selected");
         } else {
             String filename = selectedDirectory.getAbsolutePath();
             File f2 = new File(filename + "\\" + hostname + "Feedbacks.txt");
-            
+
             f2.delete();
             File f1 = new File(filename + "\\" + hostname + "Feedbacks.txt");
-            
+
             PrintWriter writer = new PrintWriter(f1);
             writer.println("Feebacks exported at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + "\n");
             String[] contents = buffer.getText().split("\n");
-            
+
             for (int i = 0; i < contents.length; i++) {
-                
+
                 writer.println(contents[i] + "\n");
             }
             writer.close();
-            
+
         }
     }
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
 }
