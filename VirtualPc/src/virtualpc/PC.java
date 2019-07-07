@@ -78,7 +78,6 @@ public class PC {
         }
 
     }
-///wrong wrong wrong wrong
 
     public InetAddress getIpAddress() {
         return ipAddress;

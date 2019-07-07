@@ -28,8 +28,8 @@ public class PortConnectionEstablish extends Thread {
     private String myhostname;
     PC pc;
 
-    public PortConnectionEstablish(int myport, String myhostname, InetAddress neighborip, String neighborhostname, int neighborport, Port p,  PC pc) {
-        this.pc=pc;
+    public PortConnectionEstablish(int myport, String myhostname, InetAddress neighborip, String neighborhostname, int neighborport, Port p, PC pc) {
+        this.pc = pc;
         this.neighborport = neighborport;
         this.myport = myport;
         this.p = p;
@@ -52,8 +52,10 @@ public class PortConnectionEstablish extends Thread {
                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
                 objectOutputStream.writeObject(new Neighbor(PC.ipAddress, myhostname, myport));
                 p.active = false;
-                System.out.println("*sending my self as a neighbor to ip=" + PC.ipAddress + " port=" + myport);
-
+                System.out.println("*sending my self as a neighbor with ip=" + PC.ipAddress + " port=" + myport);
+                Platform.runLater(() -> {
+                    buffer.appendText("sending my self as a neighbor with ip=" + PC.ipAddress + " port=" + myport + "\n");
+                });
                 ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 bool = objectInputStream.readBoolean();
 
@@ -66,10 +68,10 @@ public class PortConnectionEstablish extends Thread {
                     p.setStreams(objectInputStream, objectOutputStream);
 
                     p.setconnectionEstablished(true);
-                    synchronized(pc){
+                    synchronized (pc) {
                         pc.notifyAll();
                     }
-                    
+
                     Platform.runLater(() -> {
                         buffer.appendText("Connection is established at port " + myport + " with neighb = " + neighname + " , " + neighborport + "\n");
                     });
@@ -87,7 +89,7 @@ public class PortConnectionEstablish extends Thread {
 
                 } else {
                     Platform.runLater(() -> {
-                        buffer.appendText("*waiting a connection from " + neighborport + "\n");
+                        buffer.appendText("Waiting a connection from " + neighborport + "\n");
                     });
                     System.out.println("*waiting a connection from " + neighborport);
                     socket.close();

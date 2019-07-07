@@ -38,8 +38,8 @@ public class Port extends Thread {
     boolean active = true;
     PC pc;
 
-    public Port(int myport, String myhostname,PC pc) {
-        this.pc=pc;
+    public Port(int myport, String myhostname, PC pc) {
+        this.pc = pc;
         System.out.println("*Port " + myport + " initialized");
         this.myhostname = myhostname;
         this.connectionEstablished = false;
@@ -60,19 +60,13 @@ public class Port extends Thread {
     public void setconnectionEstablished(boolean connectionEstablished) {
         synchronized (lockconnectionEstablished) {
             this.connectionEstablished = connectionEstablished;
-//            if (connectionEstablished) {
-//                this.notifyAll();
-//            }
-
         }
     }
 
     public Socket getSocket() {
-        // System.out.println("*in getScoket method1");
-        // System.out.println("*socket in reciever local= " + socket.getLocalPort() + " port=" + socket.getPort());
 
         synchronized (lockSocket) {
-            //    System.out.println("*in getScoket method2");
+
             return socket;
         }
     }
@@ -82,7 +76,7 @@ public class Port extends Thread {
 
         synchronized (lockSocket) {
             this.socket = socket;
-            //   this.activated = true;
+
             System.out.println("*2*in setScoket method2 for port " + myport + " after ");
         }
     }
@@ -124,9 +118,9 @@ public class Port extends Thread {
 
     }
 
-    public void connect(PC p,InetAddress neighborAddress, String neighborhostname, int neighborport) {
+    public void connect(PC p, InetAddress neighborAddress, String neighborhostname, int neighborport) {
 
-        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress, neighborhostname, neighborport, this,p);
+        PortConnectionEstablish pce = new PortConnectionEstablish(myport, myhostname, neighborAddress, neighborhostname, neighborport, this, p);
         pce.start();
     }
 

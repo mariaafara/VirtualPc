@@ -69,11 +69,7 @@ public class Sender extends Thread {
             System.out.println("end");
         } catch (UnknownHostException ex) {
             Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (CloneNotSupportedException ex) {
+        } catch (IOException | NoSuchAlgorithmException | CloneNotSupportedException ex) {
             Logger.getLogger(Sender.class.getName()).log(Level.SEVERE, null, ex);
         }
 

@@ -26,10 +26,10 @@ public class PortConnectionWait extends Thread {
     String myhostname;
     PC pc;
 
-    public PortConnectionWait(int myport, String myhostname, Port p,    PC pc) {
-        
+    public PortConnectionWait(int myport, String myhostname, Port p, PC pc) {
+
         try {
-            //Creating server socket
+
             Platform.runLater(() -> {
                 buffer.appendText("port " + myport + " waiting for a conx\n");
             });
@@ -38,7 +38,7 @@ public class PortConnectionWait extends Thread {
             this.p = p;
             this.myport = myport;
             this.myhostname = myhostname;
-            this.pc=pc;
+            this.pc = pc;
         } catch (IOException ex) {
             Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -51,12 +51,11 @@ public class PortConnectionWait extends Thread {
         ObjectOutputStream objectOutputStream;
         while (true) {
             try {
-           
+
                 System.out.println("*port " + myport + " still waiting for a connection");
 
                 socket = serversocket.accept();
 
-                // rt.printTable("**Checking**");
                 System.out.println("*socket :myport " + socket.getLocalPort() + " destport " + socket.getPort());
 
                 System.out.println("*connection accepteed at port " + myport);
@@ -70,7 +69,7 @@ public class PortConnectionWait extends Thread {
                 if (!p.active) {
 
                     System.out.println("before activateEntry");
-                    p.active=true;
+                    p.active = true;
 
                     System.out.println("after activateEntry and before set socket");
                     System.out.println("\n");
@@ -80,9 +79,9 @@ public class PortConnectionWait extends Thread {
                     p.setSocket(socket);
                     p.setStreams(objectInputStream, objectOutputStream);
                     System.out.println("after setSocket");
-                    
+
                     p.setconnectionEstablished(true);
-                    synchronized(pc){
+                    synchronized (pc) {
                         pc.notifyAll();
                     }
                     Platform.runLater(() -> {
@@ -93,28 +92,28 @@ public class PortConnectionWait extends Thread {
 
                     ///sar jehez yst2bel 
                     System.out.println("ready to receive");
+
+                    new Reciever(myport, p.getOis(), p.getOos()).start();
+
                     Platform.runLater(() -> {
                         buffer.appendText("Start Receiving\n");
                     });
-                    new Reciever(myport, p.getOis(), p.getOos()).start();
-//                    new Sender( myport,myhostname, p.getOis(), p.getOos(),p.socket).start();
-
                     System.out.println("*true was sent");
 
                 } else {
 
                     objectOutputStream.writeBoolean(false);
                     objectOutputStream.flush();
-
+                    Platform.runLater(() -> {
+                        buffer.appendText("My turn to establish the connection on my side with port " + myport + "\n");
+                    });
                     System.out.println("*false was sent");
                     System.out.println("*my turn to establish the connection on my side with port " + myport);
 
                     socket.close();
                 }
 
-            } catch (IOException ex) {
-                Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ClassNotFoundException ex) {
+            } catch (IOException | ClassNotFoundException ex) {
                 Logger.getLogger(PortConnectionWait.class.getName()).log(Level.SEVERE, null, ex);
             }
 
