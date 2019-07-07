@@ -64,9 +64,8 @@ public class Reciever extends Thread {
                         final String t = recievedPacket.header.toString();
                         final String z = recievedPacket.header.getSourceHostname();
                         Platform.runLater(() -> {
-                            buffer.appendText("*Received Message =" + x + "\n");
-                            buffer.appendText("*From             =" + y + ":" + z + "\n");
-                            buffer.appendText("*Header Message =" + t + "\n");
+                            buffer.appendText("Received '" + x + "' From " + y + "-" + z + "\n");
+                            buffer.appendText("Header Message =" + t + "\n");
 
                         });
                         System.out.println("*Received Message =" + messageReceived);
@@ -76,7 +75,7 @@ public class Reciever extends Thread {
                         final String t = recievedPacket.header.toString();
                         Platform.runLater(() -> {
                             buffer.appendText("Packet TTL exceeded, therefore the message is dropped!" + "\n");
-                            buffer.appendText("*Header Message =" + t + "\n");
+                            buffer.appendText("Header Message =" + t + "\n");
                         });
 
                         System.out.println("Packet TTL exceeded, therefore the message is dropped!");
