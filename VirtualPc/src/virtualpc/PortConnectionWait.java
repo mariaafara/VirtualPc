@@ -98,6 +98,10 @@ public class PortConnectionWait extends Thread {
                     Platform.runLater(() -> {
                         buffer.appendText("Start Receiving\n");
                     });
+                    Platform.runLater(() -> {
+                        buffer.appendText("->Enter a destination to forward a packet in the form ip hostname \\n");
+                    });
+
                     System.out.println("*true was sent");
 
                 } else {

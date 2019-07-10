@@ -64,10 +64,14 @@ public class Reciever extends Thread {
                         final String t = recievedPacket.header.toString();
                         final String z = recievedPacket.header.getSourceHostname();
                         Platform.runLater(() -> {
-                            buffer.appendText("Received '" + x + "' From " + y + "-" + z + "\n");
-                            buffer.appendText("Header Message =" + t + "\n");
+                            buffer.appendText("Received ****" + x + "****\n From " + y + "-" + z + "\n");
+                            // buffer.appendText("Header Message =" + t + "\n");
 
                         });
+                        Platform.runLater(() -> {
+                            buffer.appendText("->Enter a destination to forward a packet in the form ip hostname \\n");
+                        });
+
                         System.out.println("*Received Message =" + messageReceived);
                         System.out.println("*From             =" + recievedPacket.header.getSourceAddress() + ":" + recievedPacket.header.getSourceHostname());
                         System.out.println("*Header Message =" + recievedPacket.header.toString());
