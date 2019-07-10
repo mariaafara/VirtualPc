@@ -34,7 +34,7 @@ public class PacketFactory {
         ArrayList<Packet> packets = new ArrayList<>();
         this.Message = Message;
         // ttl =15
-        Header h = new Header(n, 5, ipSource, ipDest, hostnameSource, hostnameDest);//, portSource, portDest
+        Header h = new Header(n, 10, ipSource, ipDest, hostnameSource, hostnameDest);//, portSource, portDest
         h.headerCheksum = h.getChecksum(h);
         h.totalLength = 123;
         h.DHTL = 0;

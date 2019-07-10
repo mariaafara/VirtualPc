@@ -58,7 +58,7 @@ public class Reciever extends Thread {
                 if (recievedPacket.header.getHeaderCheksum().equals(recievedPacket.header.getChecksum(recievedPacket.header.cheksumInput()))) {
                     int ttl = recievedPacket.header.getTTL();
                     ttl--;
-                    if (ttl > 0) {
+                    if (ttl >= 0) {
                         final String x = messageReceived;
                         final InetAddress y = recievedPacket.header.getSourceAddress();
                         final String t = recievedPacket.header.toString();
